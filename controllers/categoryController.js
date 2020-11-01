@@ -12,8 +12,17 @@ exports.category_list = function (req, res) {
 
 // Display detail page for a specific Category
 exports.category_detail = function (req, res, next) {
-
+  // NOT YET IMPLEMENTED
 }
+// Display category create form on GET.
+exports.category_create_get = function (req, res, next) {
+  // NOT YET IMPLEMENTED
+}
+
+// Handle category create on POST.
+exports.category_create_post = [
+  // NOT YET IMPLEMENTED 
+]
 
 // Display Category delete form on GET.
 exports.category_delete_get = function (req, res, next) {

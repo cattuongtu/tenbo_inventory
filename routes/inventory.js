@@ -3,7 +3,7 @@ var router = express.Router();
 
 // Require controller modules
 var item_controller = require("../controllers/itemController");
-var category_controller = require("../controller/categoryController");
+var category_controller = require("../controllers/categoryController");
 var collection_controller = require("../controllers/collectionController");
 
 // ITEM ROUTES//
