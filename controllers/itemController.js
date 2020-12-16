@@ -37,7 +37,16 @@ exports.index = function (req, res) {
 exports.item_list = function (req, res) {
   // TODO GET ALL ITEMS AND RENDER IN ALL ITEMS PAGE
   Item.find()
-    .populate()
+		.populate("item")
+		.exec(function (err, list_items) {
+			if (err) {
+				return next(err);
+			}
+			// Successful, so render
+			res.render("item_list.pug", {
+				item_list: list_items,
+			});
+		});
 }
 
 // Display item create form on GET.
