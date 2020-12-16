@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h1 #{collection.name}
+  p #[strong Description:] #{collection.description} 
+  p #[strong Limited Edition:] #{collection.isLimited ? 'Yes' : 'No'}
+
+  h2 Items
+  each item in collection.items
+    p #{item.name + ': ' item.price}
+
+  hr
+  p
+    a(href=collection.url +'/delete') Delete Collection 
+  p
+    a(href=collection.url +'/update') Update Collection

@@ -1,0 +1,28 @@
+extends layout 
+
+block content 
+  h1= title 
+  form(method='POST' action='')
+    div.form-group 
+      label(for='name') Name:
+      input#name.form-control(type='text' placeholder='Collection name' name='name' required='true' value=(undefined === collection ? '' : collection.name))
+    div.form-group 
+      label(for='description') Description: 
+      div.form-group 
+      textarea#description.form-control(type='textarea', placeholder='Collection description' name='description' rows='3' required='true') #{undefined === collection ? '' : collection.description}
+    div.form-group 
+      label(for='limited') Limited Edition 
+      input#limited.checkbox-input.form-control(type='checkbox' required='true')
+    div.form-group 
+      label(for='items') Items: 
+      div
+        for item in items 
+          div(style='display: inline; padding-right: 10px;')
+            input.checkbox-input(type='checkbox' name='item' id=item._id value=item._id checked=item.checked)
+            label(for=item._id) #{item.name} 
+    button.btn.btn-primary(type='submit') Submit 
+
+    if errors 
+      ul 
+        for error in errors
+          li != error.msg 

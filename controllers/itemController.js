@@ -1,4 +1,7 @@
 let Item = require("../models/item");
+let Category = require("../models/category");
+let Collection = require("../models/collection");
+
 let async = require("async");
 let {
   body,
@@ -32,7 +35,8 @@ exports.index = function (req, res) {
 
 // Display list of all Items
 exports.item_list = function (req, res) {
-  // NOT YET IMPLEMENTED
+  Item.find()
+    .populate()
 }
 
 // Display item create form on GET.
