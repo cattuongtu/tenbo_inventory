@@ -1,4 +1,4 @@
-let Item = require("../models/item");
+let Item = require("../models/item.js");
 let Category = require("../models/category");
 let ClothingCollection = require("../models/collection");
 
@@ -37,7 +37,9 @@ exports.index = function (req, res) {
 exports.item_list = function (req, res) {
   // TODO GET ALL ITEMS AND RENDER IN ALL ITEMS PAGE
   Item.find()
-		.populate("item")
+    .populate("item")
+    .populate("category")
+    .populate("collection")
 		.exec(function (err, list_items) {
 			if (err) {
 				return next(err);
@@ -79,8 +81,35 @@ exports.item_create_post = [
 
 // Display detail page for a specific Item
 exports.item_detail = function (req, res, next) {
-  // NOT YET IMPLEMENTED
-}
+  async.parallel ( {
+    item: function (callback) {
+      Item.findById(req.params.id)
+        .populate("item")
+        .populate("category")
+        .exec(callback);
+    },
+    category: function(callback) {
+      Category.find({item: req.params.id}).exec(callback);
+    }
+  },
+    function (err, results) {
+      if(err) {
+        return next(err);
+      }
+      if (results.item == null) {
+        // No results.
+        var err = new Error("Item not found");
+        err.status = 404;
+        return next(err);
+      }
+      // Successful, so render.
+      res.render("item_detail.pug", {
+        item: results.item,
+        category: results.category
+      });
+    }
+  )
+};
 
 // Display Item delete form on GET.
 exports.item_delete_get = function (req, res, next) {
