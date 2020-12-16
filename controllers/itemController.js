@@ -1,6 +1,6 @@
 let Item = require("../models/item");
 let Category = require("../models/category");
-let Collection = require("../models/collection");
+let ClothingCollection = require("../models/collection");
 
 let async = require("async");
 let {
@@ -17,14 +17,14 @@ exports.index = function (req, res) {
         Item.countDocuments({}, callback); // Pass an empty object as match conditionin to find all documents of this collection
       },
       collection_count: function(callback) {
-        Collection.countDocuments({}, callback);
+        ClothingCollection.countDocuments({}, callback);
       },
       category_count: function(callback) {
         Category.countDocuments({}, callback);
       }
     },
     function (err, results) {
-      res.render("index", {
+      res.render("index.pug", {
         title: "Tenbo Inventory",
         error: err,
         data: results,
@@ -35,6 +35,7 @@ exports.index = function (req, res) {
 
 // Display list of all Items
 exports.item_list = function (req, res) {
+  // TODO GET ALL ITEMS AND RENDER IN ALL ITEMS PAGE
   Item.find()
     .populate()
 }
@@ -47,13 +48,13 @@ exports.item_create_get = function(req, res, next) {
       Category.find(callback);
     },
     collections: function(callback) {
-      Collections.find(callback);
+      ClothingCollection.find(callback);
     },
     function(err, results) {
       if(err) {
         return next(err);
       }
-      res.render("item_form", {
+      res.render("item_form.pug", {
         title: "Create Item",
         categories: results.categories,
         collections: results.collections,
@@ -74,7 +75,27 @@ exports.item_detail = function (req, res, next) {
 
 // Display Item delete form on GET.
 exports.item_delete_get = function (req, res, next) {
-  // NOT YET IMPLEMENTED
+  async.parallel(
+    {
+      item: function(callback) {
+        // Finds item
+        Item.findById(req.params.id).exec(callback)
+      },
+    },
+    function (err, results) {
+      if (err) {
+        return next(err);
+      }
+      if (results.item == null) {
+        // No results.
+        res.redirect("/inventory/items");
+      }
+      // Successful, so render
+      res.render("item_delete.pug", {
+        item: results.item,
+      })
+    }
+  )
 }
 
 // Handle Item delete on POST.

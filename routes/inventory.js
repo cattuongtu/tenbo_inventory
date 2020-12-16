@@ -137,3 +137,5 @@ router.get("/collection/:id", collection_controller.collection_detail);
 
 // GET request for list of all collections.
 router.get("/collections", collection_controller.collection_list);
+
+module.exports = router;
