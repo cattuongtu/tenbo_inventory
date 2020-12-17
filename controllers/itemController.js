@@ -35,7 +35,6 @@ exports.index = function (req, res) {
 
 // Display list of all Items
 exports.item_list = function (req, res) {
-  // TODO GET ALL ITEMS AND RENDER IN ALL ITEMS PAGE
   Item.find()
     .populate("item")
 		.exec(function (err, list_items) {

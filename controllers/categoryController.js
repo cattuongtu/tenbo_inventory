@@ -4,15 +4,35 @@ let {
   body, 
   validationResult
 } = require("express-validator");
+const item = require("../models/item");
 
 // Display list of all Categories
 exports.category_list = function (req, res) {
-  // NOT YET IMPLEMENTED
+  Category.find()
+    .exec(function (err, list_categories) {
+      if (err) {
+        return next(err);
+      }
+      // Successful, so render
+      res.render("category_list.pug", {
+        category_list : list_categories,
+      })
+    })
 }
 
 // Display detail page for a specific Category
 exports.category_detail = function (req, res, next) {
-  // NOT YET IMPLEMENTED
+  // Display category detail.
+  Category.findById(req.params.id)
+    .exec(function (err, category) {
+      if (err) {
+        return next(err);
+      }
+      // Successful, so render
+      res.render("category_detail.pug", {
+        category: category,
+      })
+    });
 }
 // Display category create form on GET.
 exports.category_create_get = function (req, res, next) {
