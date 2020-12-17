@@ -38,8 +38,6 @@ exports.item_list = function (req, res) {
   // TODO GET ALL ITEMS AND RENDER IN ALL ITEMS PAGE
   Item.find()
     .populate("item")
-    .populate("category")
-    .populate("collection")
 		.exec(function (err, list_items) {
 			if (err) {
 				return next(err);
@@ -115,7 +113,9 @@ exports.item_delete_get = function (req, res, next) {
     {
       item: function(callback) {
         // Finds item
-        Item.findById(req.params.id).exec(callback)
+        Item.findById(req.params.id)
+          .populate("item")
+          .exec(callback)
       },
     },
     function (err, results) {
