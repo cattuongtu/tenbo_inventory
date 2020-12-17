@@ -81,16 +81,13 @@ exports.item_create_post = [
 
 // Display detail page for a specific Item
 exports.item_detail = function (req, res, next) {
+  // TODO: MAKE ITEMS BE ABLE TO DISPLAY CATEGORY ALSO
   async.parallel ( {
     item: function (callback) {
       Item.findById(req.params.id)
         .populate("item")
-        .populate("category")
         .exec(callback);
     },
-    category: function(callback) {
-      Category.find({item: req.params.id}).exec(callback);
-    }
   },
     function (err, results) {
       if(err) {
@@ -102,11 +99,12 @@ exports.item_detail = function (req, res, next) {
         err.status = 404;
         return next(err);
       }
+      
       // Successful, so render.
       res.render("item_detail.pug", {
         item: results.item,
-        category: results.category
       });
+      console.log(results.item);
     }
   )
 };
@@ -128,6 +126,7 @@ exports.item_delete_get = function (req, res, next) {
         // No results.
         res.redirect("/inventory/items");
       }
+      console.log(results);
       // Successful, so render
       res.render("item_delete.pug", {
         item: results.item,

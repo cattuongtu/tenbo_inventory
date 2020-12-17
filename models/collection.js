@@ -10,7 +10,7 @@ let CollectionSchema = new Schema({
 })
 
 // Virtual for collection's url
-CollectionSchema.virtual('url').get(() => {
+CollectionSchema.virtual('url').get(function() {
   return "/inventory/item/" + this._id;
 })
 

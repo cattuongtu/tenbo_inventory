@@ -9,7 +9,7 @@ let CategorySchema = new Schema({
 
 // Virtual for category's url
 
-CategorySchema.virtual('url').get(()=> {
+CategorySchema.virtual('url').get(function() {
   return "/inventory/category/" + this._id;
 });
 

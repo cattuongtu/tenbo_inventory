@@ -65,7 +65,7 @@ function itemCreate(
 	});
 }
 
-function categoryCreate(name, description, cb) {
+function categoryCreate(name = '', description = '', cb) {
 	categorydetail = {
 		name: name,
 		description: description
@@ -259,7 +259,7 @@ function createCollections(cb) {
 }
 
 async.series(
-	[createItems, createCategories, createCollections],
+	[createCategories, createItems, createCollections],
 	// Optional callback
 	function (err, results) {
 		if (err) {

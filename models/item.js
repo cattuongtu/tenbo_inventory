@@ -1,11 +1,11 @@
-let mongoose = require('mongoose');
+var mongoose = require('mongoose');
 
-let Schema = mongoose.Schema;
+var Schema = mongoose.Schema;
 
-let ItemSchema = new Schema({
+var ItemSchema = new Schema({
   name: {type: String, required: true, maxlength: 100},
   description: {type: String, required: true, maxlength: 250},
-  category: [{type: Schema.Types.ObjectId, ref:"Category"}],
+  category: {type: Schema.Types.ObjectId, ref: 'Category', required: true},
   price: {type: Number, required: true, max: 1000},
   numberInStock: {type: Number, required: true},
   colorway: {type: String},
