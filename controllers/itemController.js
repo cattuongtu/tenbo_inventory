@@ -59,6 +59,7 @@ exports.item_create_get = function(req, res, next) {
     collections: function(callback) {
       ClothingCollection.find(callback);
     },
+  },
     function(err, results) {
       if(err) {
         return next(err);
@@ -69,7 +70,7 @@ exports.item_create_get = function(req, res, next) {
         collections: results.collections,
       });
     }
-  });
+  );
 };
 
 // Handle item create on POST.
@@ -142,7 +143,7 @@ exports.item_delete_post = function(req, res, next) {
 
 // Display Item update form on GET.
 exports.item_update_get = function (req, res, next) {
-  // NOT YET IMPLEMENTED
+  
 }
 
 // Handle Item update on POST.
