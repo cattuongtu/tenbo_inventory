@@ -143,7 +143,28 @@ exports.item_delete_post = function(req, res, next) {
 
 // Display Item update form on GET.
 exports.item_update_get = function (req, res, next) {
-  
+  // Get all categories, which we can use for updating to our item.
+  async.parallel({
+    item: function(callback) {
+      Item.findById(req.params.id)
+        .populate("item")
+        .populate("categories")
+        .exec(callback);
+    },
+    categories: function(callback) {
+      Category.find(callback);
+    },
+  },
+    function(err, results) {
+      if(err) {
+        return next(err);
+      }
+      res.render("item_form.pug", {
+        title: "Update " + results.item.name,
+        categories: results.categories,
+      });
+    }
+  );
 }
 
 // Handle Item update on POST.
