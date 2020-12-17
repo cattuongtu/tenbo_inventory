@@ -81,11 +81,11 @@ exports.item_create_post = [
 
 // Display detail page for a specific Item
 exports.item_detail = function (req, res, next) {
-  // TODO: MAKE ITEMS BE ABLE TO DISPLAY CATEGORY ALSO
   async.parallel ( {
     item: function (callback) {
       Item.findById(req.params.id)
         .populate("item")
+        .populate("category")
         .exec(callback);
     },
   },
