@@ -65,7 +65,6 @@ exports.collection_detail = function(req, res, next) {
 exports.collection_create_get = function(req, res, next) {
   // Get all items to create your collection
   Item.find()
-    .populate("category")
     .exec(function (err, items) {
       if (err) {
         return next(err);
@@ -83,7 +82,15 @@ exports.collection_create_post = function(req, res, next) {
 
 // Display Collection delete form on GET.
 exports.collection_delete_get = function (req, res, next) {
-  // NOT YET IMPLEMENTED
+  ClothingCollection.find()
+    .exec(function(err, collection) {
+      if (err) {
+        return next(err);
+      }
+      res.render('collection_delete.pug', {
+        collection: collection
+      });
+    });
 }
 
 // Handle Collection delete on POST.
@@ -93,7 +100,24 @@ exports.collection_delete_post = function (req, res, next) {
 
 // Display Collection update on GET.
 exports.collection_update_get = function (req, res, next) {
-  // NOT YET IMPLEMENTED
+  async.parallel({
+    collection: function(callback) {
+      ClothingCollection.findById(req.params.id)
+        .exec(callback);
+    },
+    items: function(callback) {
+      Item.find(callback);
+    },
+  },
+  function(err, results) {
+    if (err) {
+      return next(err);
+    }
+    res.render("collection_form.pug" , {
+      collection: results.collection,
+      items: results.items,
+    })
+  });
 }
 
 // Handle Collection update on POST
