@@ -63,7 +63,17 @@ exports.collection_detail = function(req, res, next) {
 
 // Display collection create form on GET. 
 exports.collection_create_get = function(req, res, next) {
-  // NOT YET IMPLEMENTED 
+  // Get all items to create your collection
+  Item.find()
+    .populate("category")
+    .exec(function (err, items) {
+      if (err) {
+        return next(err);
+      }
+      res.render("collection_form.pug", {
+        items: items,
+      })
+    })
 }
 
 // Handle collection create on POST.
