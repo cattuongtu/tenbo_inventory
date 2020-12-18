@@ -6,8 +6,8 @@ block content
   p #[strong Limited Edition:] #{collection.isLimited ? 'Yes' : 'No'}
 
   h2 Items
-  each item in collection.items
-    p #{item.name + ': ' item.price}
+  each item in items
+    p #{item.name} : #{item.price}
 
   hr
   p

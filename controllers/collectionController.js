@@ -1,4 +1,4 @@
-let Collection = require("../models/collection");
+let ClothingCollection = require("../models/collection");
 let Item = require("../models/item");
 let {
   body, 
@@ -8,12 +8,57 @@ let async = require("async");
 
 // Display list of all Collections
 exports.collection_list = function (req, res) {
-  // NOT YET IMPLEMENTED
+  ClothingCollection.find()
+    .populate("collection")
+    .exec(function (err, list_collections) {
+      if (err) {
+        return next(err);
+      }
+      // Successful, so render
+      res.render("collection_list.pug", {
+        collection_list: list_collections,
+      });
+    });
 }
 
 // Display detail page for a specific Collection
 exports.collection_detail = function(req, res, next) {
-  // NOT YET IMPLEMENTTED
+  async.parallel ( {
+    collection: function (callback) {
+      ClothingCollection.findById(req.params.id)
+        .populate("collection")
+        .populate("item")
+        .populate("category")
+        .exec(callback);
+    },
+  },
+    function (err, results) {
+      if(err) {
+        return next(err);
+      }
+      if (results.collection == null) {
+        // No results.
+        var err = new Error("Collection not found");
+        err.status = 404;
+        return next(err);
+      }
+      console.log(results.collection.items);
+      Item.find({'_id': {$in:(results.collection.items)}})
+        .populate('item')
+        .populate('category')
+        .exec(function (err, item_list) {
+          if(err) {
+            return next(err)
+          }
+          // Successful, so render.
+          res.render("collection_detail.pug", {
+            collection: results.collection,
+            items: item_list,
+          });
+          console.log(results.collection);
+        });
+    }
+  )
 }
 
 // Display collection create form on GET. 

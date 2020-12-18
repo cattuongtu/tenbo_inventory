@@ -1,4 +1,4 @@
-let Item = require("../models/item.js");
+let Item = require("../models/item");
 let Category = require("../models/category");
 let ClothingCollection = require("../models/collection");
 

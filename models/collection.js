@@ -11,7 +11,7 @@ let CollectionSchema = new Schema({
 
 // Virtual for collection's url
 CollectionSchema.virtual('url').get(function() {
-  return "/inventory/item/" + this._id;
+  return "/inventory/collection/" + this._id;
 })
 
 // Export model
