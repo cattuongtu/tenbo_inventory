@@ -85,7 +85,17 @@ exports.category_delete_post = function(req, res, next) {
 
 // Display Category update form on GET.
 exports.category_update_get = function (req, res, next) {
-  // NOT YET IMPLEMENTED
+  Category.findById(req.params.id)
+    .populate("category")
+    .exec(function (err, category) {
+      if(err) {
+        return next(err);
+      }
+      // If no error, render template
+      res.render("category_form.pug", {
+        category: category,
+      });
+    });
 }
 
 // Handle Category update on POST.
