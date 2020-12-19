@@ -78,7 +78,6 @@ exports.item_create_post = [
 	body("name", "Title must not be empty.")
 		.isLength({ min: 1 })
 		.trim(),
-		
 	body("category", "Category must not be empty.")
 		.isLength({ min: 1 })
 		.trim(),
@@ -252,6 +251,7 @@ exports.item_update_get = function (req, res, next) {
       }
       res.render("item_form.pug", {
         title: "Update " + results.item.name,
+        item: results.item,
         categories: results.categories,
       });
     }
@@ -260,15 +260,78 @@ exports.item_update_get = function (req, res, next) {
 
 // Handle Item update on POST.
 exports.item_update_post = [
-  (req, res, next) => {
-    // NOT YET IMPLEMENTED
-    next();
-  },
+	// Validate and sanitise fields.
+  body("name", "Title must not be empty.")
+		.isLength({ min: 1 })
+		.trim(),
+	body("category", "Category must not be empty.")
+		.isLength({ min: 1 })
+		.trim(),
+	body("description", "Description must not be empty.")
+		.isLength({ min: 1 })
+		.trim(),
+	body("colorway", "Colorway must not be empty")
+		.isLength({ min: 1 })
+		.trim(),
+  body("price", "Price must not be empty")
+    .trim(),
+  body("numberInStock", "Number in stock must not be empty")
+    .trim(),
 
-  // Validate and sanitize fields.
+	// Process request after validation and sanitization.
+	(req, res, next) => {
+		// Extract the validation errors from a request.
+		const errors = validationResult(req);
 
-  // Process request after validiation and sanitization.
-  (req, res, next) => {
+		// Create a Item object with escaped/trimmed data and old id.
+		var item = new Item({
+			name: req.body.name,
+			description: req.body.description,
+			category: req.body.category,
+			price: req.body.price,
+      numberInStock: req.body.numberInStock,
+      colorway: req.body.colorway,
+			_id: req.params.id, // This is required, or a new ID will be assigned!
+		});
 
-  }
+		if (!errors.isEmpty()) {
+			// There are errors. Render form again with sanitized values/error messages.
+
+			// Get all categories for form.
+			async.parallel(
+				{
+					categories: function (callback) {
+						Category.find(callback);
+          },
+				},
+				function (err, results) {
+					if (err) {
+						return next(err);
+					}
+
+					res.render("item_form.pug", {
+						title: "Update Item",
+            categories: results.categories,
+            item:item,
+						errors: errors.array(),
+					});
+				}
+			);
+			return;
+		} else {
+			// Data from form is valid. Update the record.
+			Item.findByIdAndUpdate(
+				req.params.id,
+				item,
+				{},
+				function (err, item) {
+					if (err) {
+						return next(err);
+					}
+					// Successful - redirect to book detail page.
+					res.redirect(item.url);
+				}
+			);
+		}
+	},
 ];
