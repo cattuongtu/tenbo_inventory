@@ -3,7 +3,7 @@ let Category = require("../models/category");
 let ClothingCollection = require("../models/collection");
 
 let async = require("async");
-let {
+const {
   body,
   validationResult
 } = require("express-validator");
@@ -137,8 +137,31 @@ exports.item_delete_get = function (req, res, next) {
 
 // Handle Item delete on POST.
 exports.item_delete_post = function(req, res, next) {
-  // NOT YET IMPLEMENTED
-}
+  async.parallel(
+    {
+      item: function(callback) {
+        Item.findById(req.body.itemid).exec(callback);
+      }
+    },
+    function (err, results) {
+			if (err) {
+				return next(err);
+			}
+			Item.findByIdAndRemove(
+				req.body.itemid,
+				function deleteItem(err) {
+					if (err) {
+						return next(err);
+					}
+					// Success - go to inventory list
+					res.redirect("/inventory/items");
+				}
+			);
+
+			return;
+		}
+	);
+};
 
 // Display Item update form on GET.
 exports.item_update_get = function (req, res, next) {
