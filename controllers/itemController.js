@@ -74,7 +74,75 @@ exports.item_create_get = function(req, res, next) {
 
 // Handle item create on POST.
 exports.item_create_post = [
-  // NOT YET IMPLEMENTED
+  // Validate and sanitise fields.
+	body("name", "Title must not be empty.")
+		.isLength({ min: 1 })
+		.trim(),
+		
+	body("category", "Category must not be empty.")
+		.isLength({ min: 1 })
+		.trim(),
+	body("description", "Description must not be empty.")
+		.isLength({ min: 1 })
+		.trim(),
+	body("colorway", "Colorway must not be empty")
+		.isLength({ min: 1 })
+		.trim(),
+  body("price", "Price must not be empty")
+    .trim(),
+  body("numberInStock", "Number in stock must not be empty")
+    .trim(),
+
+
+	// Process request after validation and sanitization.
+	(req, res, next) => {
+		// Extract the validation errors from a request.
+		const errors = validationResult(req);
+
+		// Create a item object with escaped and trimmed data.
+		var item = new Item({
+			name: req.body.name,
+			description: req.body.description,
+			category: req.body.category,
+			price: req.body.price,
+      numberInStock: req.body.numberInStock,
+      colorway: req.body.colorway
+		});
+
+		if (!errors.isEmpty()) {
+			// There are errors. Render form again with sanitized values/error messages.
+
+			// Get all categories for form.
+			async.parallel(
+				{
+					categories: function (callback) {
+						Category.find(callback);
+					},
+				},
+				function (err, results) {
+					if (err) {
+						return next(err);
+					}
+					res.render("book_form", {
+						title: "Create Item",
+						categories: results.categories,
+						item: item,
+						errors: errors.array(),
+					});
+				}
+			);
+			return;
+		} else {
+			// Data from form is valid. Save book.
+			item.save(function (err) {
+				if (err) {
+					return next(err);
+				}
+				//successful - redirect to new book record.
+				res.redirect(item.url);
+			});
+		}
+	},
 ]
 
 // Display detail page for a specific Item
