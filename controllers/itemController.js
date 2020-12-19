@@ -140,7 +140,8 @@ exports.item_delete_post = function(req, res, next) {
   async.parallel(
     {
       item: function(callback) {
-        Item.findById(req.body.itemid).exec(callback);
+        Item.findById(req.params.id)
+        .exec(callback);
       }
     },
     function (err, results) {
@@ -148,7 +149,7 @@ exports.item_delete_post = function(req, res, next) {
 				return next(err);
 			}
 			Item.findByIdAndRemove(
-				req.body.itemid,
+				req.params.id,
 				function deleteItem(err) {
 					if (err) {
 						return next(err);

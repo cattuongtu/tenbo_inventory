@@ -1,6 +1,6 @@
 let ClothingCollection = require("../models/collection");
 let Item = require("../models/item");
-let {
+const {
   body, 
   validationResult
 } = require("express-validator");
@@ -95,7 +95,30 @@ exports.collection_delete_get = function (req, res, next) {
 
 // Handle Collection delete on POST.
 exports.collection_delete_post = function (req, res, next) {
-
+  async.parallel(
+    {
+      collection: function(callback) {
+        ClothingCollection.findById(req.params.id)
+        .exec(callback);
+      }
+    },
+    function (err, results) {
+			if (err) {
+				return next(err);
+			}
+			ClothingCollection.findByIdAndRemove(
+				req.params.id,
+				function deleteCollection(err) {
+					if (err) {
+						return next(err);
+					}
+					// Success - go to inventory list
+					res.redirect("/inventory/collections");
+				}
+			);
+			return;
+		}
+	);
 }
 
 // Display Collection update on GET.
