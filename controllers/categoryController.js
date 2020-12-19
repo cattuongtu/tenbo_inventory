@@ -80,7 +80,44 @@ exports.category_delete_get = function (req, res, next) {
 
 // Handle Category delete on POST.
 exports.category_delete_post = function(req, res, next) {
-  // NOT YET IMPLEMENTED
+  async.parallel(
+		{
+			category: function (callback) {
+				Category.findById(req.params.id).exec(callback);
+			},
+			category_item_list: function (callback) {
+			  Item.find({ category: req.params.id }).exec(
+					callback
+				);
+			},
+		},
+		function (err, results) {
+			if (err) {
+				return next(err);
+			}
+			// Success
+			if (results.category_item_list.length > 0) {
+				// Book has book instances. Render in same way as for GET route.
+				res.render("book_delete", {
+					category: results.category,
+					category_item_list: results.category_item_list,
+				});
+				return;
+			} else {
+				// Category has no items belonging in it. Delete object and redirect to the list of categories.
+				Category.findByIdAndRemove(
+					req.params.id,
+					function deleteCategory(err) {
+						if (err) {
+							return next(err);
+						}
+						// Success - go to category list
+						res.redirect("/inventory/categories");
+					}
+				);
+			}
+		}
+	);
 }
 
 // Display Category update form on GET.
