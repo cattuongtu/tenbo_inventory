@@ -191,6 +191,27 @@ exports.collection_update_get = function (req, res, next) {
     if (err) {
       return next(err);
     }
+    // TODO: Figure out why our items are not getting checked.
+					// Mark our selected items as checked.
+					for (
+				    var all_i_iter = 0;
+				    all_i_iter < results.items.length;
+				    all_i_iter++
+			    ) {
+				    for (
+              var col_i_iter = 0;
+              col_i_iter < results.collection.items.length;
+              col_i_iter++
+            ) {
+              if (
+                results.items[all_i_iter]._id.toString() ==
+                results.collection.items[col_i_iter]._id.toString()
+              ) {
+                console.log("TRU");
+                results.items[all_i_iter].checked = "true";
+              }
+            }
+          }
     res.render("collection_form.pug" , {
       collection: results.collection,
       items: results.items,
@@ -250,21 +271,14 @@ exports.collection_update_post = [
 					},
           collection: 
             ClothingCollection.findById(req.params.id)
+              .populate("item")
               .exec(callback)
 				},
 				function (err, results) {
 					if (err) {
 						return next(err);
 					}
-
-					// Mark our selected items as checked.
-					for (let i = 0; i < results.items.length; i++) {
-						if (
-							collection.items.indexOf(results.items[i]._id) > -1
-						) {
-							results.items[i].checked = "true";
-						}
-					}
+          
 					res.render("collection_form.pug", {
 						title: "Update Collection",
             collection: results.collection,
