@@ -169,7 +169,6 @@ exports.item_detail = function (req, res, next) {
       res.render("item_detail.pug", {
         item: results.item,
       });
-      console.log(results.item);
     }
   )
 };

@@ -1,5 +1,7 @@
 var express = require("express");
 var router = express.Router();
+var multer = require('multer');
+var upload = multer({dest: 'uploads/'});
 
 // Require controller modules
 var item_controller = require("../controllers/itemController");
@@ -49,6 +51,7 @@ router.get("/item/:id", item_controller.item_detail);
 
 // GET request for list of all item items.
 router.get("/items", item_controller.item_list);
+
 
 /// CATEGORY ROUTES ///
 
