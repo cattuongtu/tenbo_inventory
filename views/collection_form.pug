@@ -12,7 +12,7 @@ block content
       textarea#description.form-control(type='textarea', placeholder='Collection description' name='description' rows='3' required='true') #{undefined === collection ? '' : collection.description}
     div.form-group 
       label(style='padding-right: 10px;' for='isLimited') Limited Edition 
-      input#isLimited.checkbox-input(type='checkbox' name="isLimited")
+      input#isLimited.checkbox-input(type='checkbox' name="isLimited" checked=(collection !== undefined ? collection.isLimited : false))
     div.form-group 
       label(for='items') Items: 
       div
