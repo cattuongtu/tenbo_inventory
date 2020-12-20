@@ -162,7 +162,6 @@ exports.category_delete_post = function(req, res, next) {
 // Display Category update form on GET.
 exports.category_update_get = function (req, res, next) {
   Category.findById(req.params.id)
-    .populate("category")
     .exec(function (err, category) {
       if(err) {
         return next(err);
@@ -176,15 +175,64 @@ exports.category_update_get = function (req, res, next) {
 
 // Handle Category update on POST.
 exports.category_update_post = [
-  (req, res, next) => {
-    // NOT YET IMPLEMENTED
-    next();
-  },
+  // Validate and sanitise fields.
+  body("name", "Title must not be empty.")
+		.isLength({ min: 1 })
+		.trim(),
+	body("description", "Description must not be empty.")
+		.isLength({ min: 1 })
+    .trim(),
+  
+	// Process request after validation and sanitization.
+	(req, res, next) => {
+		// Extract the validation errors from a request.
+		const errors = validationResult(req);
 
-  // Validate and sanitize fields.
+		// Create a Category object with escaped/trimmed data and old id.
+		var category = new Category({
+			name: req.body.name,
+			description: req.body.description,
+			_id: req.params.id, // This is required, or a new ID will be assigned!
+		});
 
-  // Process request after validiation and sanitization.
-  (req, res, next) => {
+		if (!errors.isEmpty()) {
+			// There are errors. Render form again with sanitized values/error messages.
 
-  }
+			// Get all for form.
+			async.parallel(
+				{
+					category: function (callback) {
+            Category.findById(req.params.id)
+              .exec(callback);
+          },
+				},
+				function (err, results) {
+					if (err) {
+						return next(err);
+					}
+
+					res.render("category_form.pug", {
+						title: "Update Category",
+            category: results.category,
+						errors: errors.array(),
+					});
+				}
+			);
+			return;
+		} else {
+			// Data from form is valid. Update the category record.
+			Category.findByIdAndUpdate(
+				req.params.id,
+				category,
+				{},
+				function (err, category) {
+					if (err) {
+						return next(err);
+					}
+					// Successful - redirect to category detail page.
+					res.redirect(category.url);
+				}
+			);
+		}
+	},
 ];
