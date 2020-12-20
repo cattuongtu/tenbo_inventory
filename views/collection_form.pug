@@ -11,14 +11,14 @@ block content
       div.form-group 
       textarea#description.form-control(type='textarea', placeholder='Collection description' name='description' rows='3' required='true') #{undefined === collection ? '' : collection.description}
     div.form-group 
-      label(style='padding-right: 10px;' for='limited') Limited Edition 
-      input#limited.checkbox-input(type='checkbox' required='true')
+      label(style='padding-right: 10px;' for='isLimited') Limited Edition 
+      input#isLimited.checkbox-input(type='checkbox' name="isLimited")
     div.form-group 
       label(for='items') Items: 
       div
         for item in items 
           div(style='display: inline; padding-right: 10px;')
-            input.checkbox-input(type='checkbox' name='item' id=item._id value=item._id checked=item.checked)
+            input.checkbox-input(type='checkbox' name='items' id=item._id value=item._id checked=item.checked)
             label(style='padding-left: 5px' for=item._id) #{item.name} 
     button.btn.btn-primary(type='submit') Submit 
 

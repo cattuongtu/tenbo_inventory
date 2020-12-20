@@ -42,7 +42,6 @@ exports.collection_detail = function(req, res, next) {
         err.status = 404;
         return next(err);
       }
-      console.log(results.collection.items);
       Item.find({'_id': {$in:(results.collection.items)}})
         .populate('item')
         .populate('category')
@@ -55,7 +54,6 @@ exports.collection_detail = function(req, res, next) {
             collection: results.collection,
             items: item_list,
           });
-          console.log(results.collection);
         });
     }
   )
@@ -76,9 +74,66 @@ exports.collection_create_get = function(req, res, next) {
 }
 
 // Handle collection create on POST.
-exports.collection_create_post = function(req, res, next) {
-  // NOT YET IMPLEMENTED
-}
+exports.collection_create_post = [
+  
+	// Validate and sanitise fields.
+	body("name", "Name must not be empty.")
+		.isLength({ min: 1 })
+		.trim(),
+	body("description", "Description must not be empty.")
+		.isLength({ min: 1 })
+    .trim(),
+  body("isLimited"),
+
+	// Process request after validation and sanitization.
+	(req, res, next) => {
+    console.log(req.body);
+		// Extract the validation errors from a request.
+		const errors = validationResult(req);
+		// Create a Collection object with escaped and trimmed data.
+		var collection = new ClothingCollection({
+			name: req.body.name,
+			description: req.body.description,
+			isLimited: req.body.isLimited == 'on' ? true : false,
+			items: req.body.items,
+    });
+		if (!errors.isEmpty()) {
+			// There are errors. Render form again with sanitized values/error messages.
+			// Get all items for form.
+			async.parallel(
+				{
+					items: function (callback) {
+            Item.find({'_id' : {$in: collection.items}})
+              .populate('item')
+              .populate('category')
+              .exec(callback);
+					},
+				},
+				function (err, results) {
+					if (err) {
+						return next(err);
+          }
+
+					res.render("collection_form.pug", {
+						title: "Create Collection",
+						items: results.items,
+						errors: errors.array(),
+					});
+				}
+			);
+			return;
+		} else {
+			// Data from form is valid. Save collection.
+			collection.save(function (err) {
+				if (err) {
+					return next(err);
+				}
+				//successful - redirect to new collection record.
+				res.redirect(collection.url);
+			});
+		}
+	},
+];
 
 // Display Collection delete form on GET.
 exports.collection_delete_get = function (req, res, next) {
