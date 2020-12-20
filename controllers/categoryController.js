@@ -50,7 +50,46 @@ exports.category_create_get = function (req, res, next) {
 
 // Handle category create on POST.
 exports.category_create_post = [
-  // NOT YET IMPLEMENTED 
+  // Validate and sanitise fields.
+	body("name", "Title must not be empty.")
+		.isLength({ min: 1 })
+		.trim(),
+	body("description", "Description must not be empty.")
+		.isLength({ min: 1 })
+		.trim(),
+
+	// Process request after validation and sanitization.
+	(req, res, next) => {
+		// Extract the validation errors from a request.
+		const errors = validationResult(req);
+    
+		// Create a Category object with trimmed data.
+		var category = new Category({
+			name: req.body.name,
+			description: req.body.description,
+		});
+
+		if (!errors.isEmpty()) {
+			// There are errors. Render form again with sanitized values/error messages.
+      if (err) {
+        return next(err);
+      }
+      res.render("category_form.pug", {
+        title: "Create Category",
+        errors: errors.array(),
+      });
+			return;
+		} else {
+			// Data from form is valid. Save category.
+			category.save(function (err) {
+				if (err) {
+					return next(err);
+				}
+				//successful - redirect to new category record.
+				res.redirect(category.url);
+			});
+		}
+	},
 ]
 
 // Display Category delete form on GET.
