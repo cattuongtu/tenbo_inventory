@@ -7,9 +7,6 @@ block content
   p #[strong Price:] #{item.price}
   p #[strong Number in Stock:] #{item.numberInStock}
   p #[strong Colorway:] #{item.colorway} 
-  p #[strong Photo:]
-    img(src=(undefined == picture ? 'none' : picture ) alt='none')
-  
   hr
   p
     a(href=item.url+'/delete') Delete Item 
